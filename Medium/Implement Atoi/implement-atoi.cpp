@@ -8,33 +8,52 @@ using namespace std;
 //User function template for C++
 
 class Solution{
+    private:
+    int helper(string& s, int index, int sign, int result ) {
+        if (index >= s.length() || !isdigit(s[index]))
+        return result;
+
+    int digit = s[index] - '0';
+
+    // Check for overflow
+    if (result > INT_MAX / 10 || (result == INT_MAX / 10 && digit > INT_MAX % 10)) {
+        return (sign == -1) ? INT_MIN : INT_MAX;
+    }
+    if (result < INT_MIN / 10 || (result == INT_MIN / 10 && digit > -(INT_MIN % 10))) {
+        return (sign == 1) ? INT_MAX : INT_MIN;
+    }
+
+    result = result * 10 + sign * digit;
+
+    // Recursive call to process the next character
+    return helper(s, index + 1, sign, result);
+    }
   public:
     /*You are required to complete this method */
-    int atoi(string str) {
+    int atoi(string s) {
         //Your code here
-        int i=0;
-        int resp =0;
-        int sign=1;
-        while(str[i]==' ')
-            i++;
-        if(str[i]=='-')
-            {
-                sign=-1;
-                i++;
-            }
+        if (s.length() == 0)
+            return 0;
         
-        while(i<str.length() && isdigit(str[i])){
-            int curChar = str[i] - '0';
-            if (resp > (INT_MAX - curChar) / 10) {
-                return sign == 1 ? INT_MAX : INT_MIN;
-            }
-            resp = resp * 10 + curChar;
-            i++;
+        int index = 0;
+        while (index < s.length() && s[index] == ' ')
+            index++;
+
+        int sign = 1;
+        if (index < s.length() && (s[index] == '+' || s[index] == '-')) {
+            sign = (s[index] == '-') ? -1 : 1;
+            index++;
         }
-        if(i<str.length())
-            return -1;
-        return resp*sign;
+        for(int i=index;i<s.length();i++){
+            if(!isdigit(s[i]))
+                return -1;
+        }
+        int result = helper(s, index, sign, 0);
+
+
+        return result;
     }
+    
 };
 
 //{ Driver Code Starts.
