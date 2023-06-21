@@ -12,15 +12,26 @@ class Solution {
 public:
     int findTargetSumWays(vector<int>&nums ,int target) {
         //Your code here
+        unordered_map<int,unordered_map<int,int>> dp;
+        return memoisation(nums.size()-1, nums, target, dp);
         return recursion(nums.size()-1, nums, target);
     }
-    private:
+private:
     int recursion(int idx , const vector<int> & nums , int target){
         if(idx < 0)
             return target == 0;
         int negative = recursion(idx-1,nums,target+nums[idx]);
         int positive =  recursion(idx-1,nums,target-nums[idx]);
         return positive + negative;
+    }
+    int memoisation(int idx , const vector<int> & nums , int target,unordered_map<int,unordered_map<int,int>> & dp){
+        if(idx < 0)
+            return target == 0;
+        if(dp[idx].find(target) != dp[idx].end())
+            return dp[idx][target];
+        int negative = memoisation(idx-1,nums,target+nums[idx],dp);
+        int positive =  memoisation(idx-1,nums,target-nums[idx],dp);
+        return dp[idx][target] =  positive + negative;
     }
 };
 
