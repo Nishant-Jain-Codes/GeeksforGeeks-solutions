@@ -5,53 +5,69 @@ using namespace std;
 
 
 // } Driver Code Ends
-class Solution {
-  public:
+
+class Solution
+{
+public:
     // Function to convert an infix expression to a postfix expression.
-    int precedence(char opr){
-        switch (opr){
-            case '+' : return 1;
-            case '-' : return 1;
-            case '*' : return 2;
-            case '/' : return 2;
-            case '^' : return 3;
-            default : return -1;
-        }
-    }
-    bool isOperator(char c){
-        return c=='+' || c=='-' || c=='^' || c== '*' || c=='/'; 
-    }
-    string infixToPostfix(string infix) {
+    string infixToPostfix(string s)
+    {
         // Your code here
-        string postfix= "";
-        stack<char> stk;
-        for(int i=0;i<infix.length();i++){
-            if( isalnum(infix[i])){
-                postfix.push_back(infix[i]);
+        string output = "";
+        stack<char> st;
+        for (int i = 0; i < s.length(); i++)
+        {
+            char c = s[i];
+            // if operand then add to output
+            if (isalpha(c)||isdigit(c))
+            {
+                output.push_back(c);
             }
-            else if( infix[i]=='(')
-                stk.push('(');
-            else if(infix[i]==')'){
-                while(stk.top()!='(')
+            else
+            {
+                if (st.empty() || st.top() == '(' || c == '(')
+                    st.push(c);
+                else if (c == ')')
                 {
-                    postfix.push_back(stk.top());
-                    stk.pop();
+                    while (!st.empty() && st.top() != '(') // Check if stack is not empty before accessing top element
+                    {
+                        output.push_back(st.top());
+                        st.pop();
+                    }
+                    st.pop(); // Pop '(' from the stack
                 }
-                stk.pop();
-            }
-            else if(isOperator(infix[i])){
-                while(!stk.empty() && precedence(infix[i])<= precedence(stk.top())){
-                    postfix.push_back(stk.top());
-                    stk.pop();
+                else
+                {
+                    int inputPrecedence = precedence(c);
+                    while (!st.empty() && inputPrecedence <= precedence(st.top())) // Check if stack is not empty before accessing top element
+                    {
+                        output.push_back(st.top());
+                        st.pop();
+                    }
+                    st.push(c);
                 }
-                stk.push(infix[i]);
             }
         }
-        while(!stk.empty()){
-            postfix.push_back(stk.top());
-            stk.pop();
+        while (!st.empty())
+        {
+            if(st.top() != '(' && st.top() != ')')
+            output.push_back(st.top());
+            st.pop();
         }
-        return postfix;
+        return output;
+    }
+
+private:
+    int precedence(char c)
+    {
+        if (c == '^')
+            return 3;
+        else if (c == '*' || c == '/')
+            return 2;
+        else if (c == '+' || c == '-')
+            return 1;
+        else
+            return -1;
     }
 };
 
